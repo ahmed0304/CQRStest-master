@@ -40,9 +40,11 @@ namespace CQRStest.Queries.Handler
                 if (lv_product != null)
                 {
                     _mapper.Map(lv_product, query);
+                    return query;
                 }
 
-                return query;
+                return null;
+                
             }
             catch (Exception e)
             {

@@ -11,8 +11,6 @@ namespace CQRStest.Commands
         public string Description { get; set; }
         public decimal UnitPrice { get; set; }
         public int CurrentStock { get; set; }
-
-
     }
     public class DeleteProductCommand
     {

@@ -12,5 +12,6 @@ namespace CQRStest.Queries
         public string Description { get; set; }
         public decimal UnitPrice { get; set; }
         public bool IsOutOfStock { get; set; }
+        public int CurrentStock { get; set; }
     }
 }
