@@ -36,19 +36,24 @@ namespace CQRStest.Queries.Handler
             try
             {
                 Product lv_product = _storeDbContext.Product.Find(query.Id);
-                
+
                 if (lv_product != null)
                 {
                     _mapper.Map(lv_product, query);
+
+                    return query;
+                }
+                else
+                {
+                    return null;
                 }
 
-                return query;
             }
             catch (Exception e)
             {
                 throw new Exception($"Cannot find Product #{query.Id} in the store, {e.Message}.");
             }
-           
+
         }
     }
 }
