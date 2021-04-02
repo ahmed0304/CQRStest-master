@@ -15,6 +15,7 @@ namespace CQRStest.Models
             CreateMap<Product, UpdateProductCommand>().ReverseMap();
             CreateMap<Product, CreateProductCommand>().ReverseMap();
             CreateMap<Product, ProductDisplayQuery>().ReverseMap();
+            CreateMap<CreateProductCommand, ProductDisplayQuery>().ReverseMap();
         }
     }
 }
