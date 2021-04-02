@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
 using System.Collections.Generic;
@@ -15,13 +16,29 @@ namespace IdentityServer
             {
                  new IdentityResources.OpenId(),
                  new IdentityResources.Profile(),
+                // new IdentityResource("roles", "Your role", new List<string> {JwtClaimTypes.Role})
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
            new List<ApiScope>
         {
-            new ApiScope("api1", "My API")
+           // new ApiScope("api1", "My API"),
+            new ApiScope("api1", "my cqrsMaster API")
         };
+
+
+        public static IEnumerable<ApiResource> GetApis()
+        {
+            return new[]
+            {
+                new ApiResource
+                {
+                Name = "cqrsMasterApi",
+                DisplayName = "cqrsMaster API",
+                Scopes = { "api1" }
+                }
+            };
+        }
 
         public static IEnumerable<Client> Clients =>
      new List<Client>
@@ -35,7 +52,7 @@ namespace IdentityServer
                     {
                         new Secret("secret".Sha256())
                     },
-                    AllowedScopes = { "api1" }
+                    AllowedScopes = { "api1"/*"cqrsMasterApi"*/ }
                 },
 
         new Client

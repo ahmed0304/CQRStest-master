@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using MediatR;
+using IdentityServer4.AccessTokenValidation;
 
 namespace CQRStest
 {
@@ -28,18 +29,23 @@ namespace CQRStest
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var settings = Configuration.GetSection(nameof(ApplicationConfiguration.Authentication))
+                .Get<IdentityServerAuthenticationOptions>();
+
             services.AddControllersWithViews();
 
             services.AddAuthentication("Bearer")
            .AddJwtBearer("Bearer", options =>
            {
-               options.Authority = "https://localhost:5001";
-
+               options.Authority = settings.Authority;
+               options.Audience = settings.ApiName;
+               options.RequireHttpsMetadata = settings.RequireHttpsMetadata;
                options.TokenValidationParameters = new TokenValidationParameters
                {
-                   ValidateAudience = false
+                   ValidateAudience = settings.LegacyAudienceValidation,
                };
            });
+
 
             services.AddEntityFrameworkNpgsql().AddDbContext<StoreDbContext>(opt =>
         opt.UseNpgsql(Configuration.GetConnectionString("MyStoreDbConection")));
