@@ -50,34 +50,6 @@ namespace CQRStest
                     Version = "v1",
                     Description = "Sample service for CQRS Learner",
                 });
-
-
-                // To Enable authorization using Swagger (JWT)  
-                //options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-                //{
-                //    Name = "Authorization",
-                //    Type = SecuritySchemeType.ApiKey,
-                //    Scheme = "Bearer",
-                //    BearerFormat = "JWT",
-                //    In = ParameterLocation.Header,
-                //    Description = "JWT Authorization header using the Bearer scheme.",
-                //});
-
-                //options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                //{
-                //    {
-                //          new OpenApiSecurityScheme
-                //            {
-                //                Reference = new OpenApiReference
-                //                {
-                //                    Type = ReferenceType.SecurityScheme,
-                //                    Id = "Bearer"
-                //                }
-                //            },
-                //            new string[] {}
-
-                //    }
-                //});
             });
 
             services.AddEntityFrameworkNpgsql().AddDbContext<StoreDbContext>(opt =>
