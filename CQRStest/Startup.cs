@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
+using MediatR;
 
 namespace CQRStest
 {
@@ -42,9 +44,8 @@ namespace CQRStest
             services.AddEntityFrameworkNpgsql().AddDbContext<StoreDbContext>(opt =>
         opt.UseNpgsql(Configuration.GetConnectionString("MyStoreDbConection")));
 
-            
-            services.AddScoped<ProductsCommandHandler>();
-            services.AddScoped<ProductQueryHandler>();
+            services.AddMediatR(Assembly.GetExecutingAssembly());
+
             services.AddAutoMapper(typeof(Startup));
         }
 

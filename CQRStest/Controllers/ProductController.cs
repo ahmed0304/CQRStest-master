@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using CQRStest.Queries;
 using CQRStest.Queries.Handler;
 using Microsoft.AspNetCore.Authorization;
+using MediatR;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CQRStest.Controllers
@@ -18,20 +19,19 @@ namespace CQRStest.Controllers
     [Authorize]
     public class ProductController : ControllerBase
     {
-        private ProductsCommandHandler _commandHandler;
-        private ProductQueryHandler _queryHandler;
-        public ProductController(ProductsCommandHandler commandHandler, ProductQueryHandler queryHandler)
+        private readonly IMediator _mediator;
+
+        public ProductController(IMediator mediator)
         {
-            this._commandHandler = commandHandler;
-            this._queryHandler = queryHandler;
+            this._mediator = mediator;
         }
 
 
         // GET: api/<ProductController>
         [HttpGet("getAll")]
-        public ActionResult GetAllProductInfo()
+        public async Task<ActionResult> GetAllProductInfo()
         {
-            var result = _queryHandler.Handler();
+            var result = await _mediator.Send(new AllProductDisplayQuery());
 
             if (result != null)
             {
@@ -43,10 +43,9 @@ namespace CQRStest.Controllers
 
         // GET api/<ProductController>/5
         [HttpGet("getById/{id}")]
-        public ActionResult Get(int id)
+        public async Task<ActionResult> Get(int id)
         {
-            ProductDisplayQuery lv_productDisplay = new ProductDisplayQuery { Id = id };
-            var result = _queryHandler.Handler(lv_productDisplay);
+            var result = await _mediator.Send(new ProductDisplayQuery { Id = id });
 
             if (result != null)
             {
@@ -58,12 +57,13 @@ namespace CQRStest.Controllers
 
         // POST api/<ProductController>
         [HttpPost("AddProduct")]
-        public ActionResult Post([FromBody] CreateProductCommand request)
+        public async Task<ActionResult> Post([FromBody] CreateProductCommand request)
         {
             if (request != null)
             {
-               int product_id = _commandHandler.Handler(request);
-               return CreatedAtAction(ControllerContext.ActionDescriptor.ActionName, product_id);
+                var result = await _mediator.Send(request);
+
+                return CreatedAtAction(ControllerContext.ActionDescriptor.ActionName, result);
             }
 
             return BadRequest();
@@ -71,27 +71,26 @@ namespace CQRStest.Controllers
 
         // PUT api/<ProductController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] UpdateProductCommand request)
+        public async Task<ActionResult> Put(int id, [FromBody] UpdateProductCommand request)
         {
-            if (id > 0 && request !=null)
+            if (id > 0 && request != null)
             {
-                bool result  = _commandHandler.Handler(id,request);
-                if (result)
-                {
-                    return CreatedAtAction(ControllerContext.ActionDescriptor.ActionName, id);
-                }
+                request.Id = id;
+
+                var result = await _mediator.Send(request);
+                if(result != null) return Ok(result);
             }
 
-            return BadRequest();
+            return BadRequest("Does Not Exist");
         }
 
         // DELETE api/<ProductController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             if (id > 0)
             {
-                bool result = _commandHandler.Handler(new DeleteProductCommand { Id=id });
+                bool result = await _mediator.Send(new DeleteProductCommand { Id = id });
                 if (result)
                 {
                     return Ok(id);

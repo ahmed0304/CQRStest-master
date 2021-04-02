@@ -2,103 +2,112 @@
 using CQRStest.Commands;
 using CQRStest.Models;
 using CQRStest.Queries;
-
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 namespace CQRStest.Handler
 {
-    public class ProductsCommandHandler
+    public class CreateProductHandler : IRequestHandler<CreateProductCommand, ProductDisplayQuery>
     {
-        private StoreDbContext _storeDbContext;
+        private readonly StoreDbContext _storeDbContext;
         private readonly IMapper _mapper;
-        public ProductsCommandHandler(StoreDbContext storeDbContext, IMapper mapper)
+        public CreateProductHandler(StoreDbContext storeDbContext, IMapper mapper)
         {
             this._storeDbContext = storeDbContext;
-            _mapper = mapper;
+            this._mapper = mapper;
         }
 
-        public int Handler(CreateProductCommand command)
+        public async Task<ProductDisplayQuery> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                int id = 0;
-                if (command != null)
-                {
-                    Product lv_product = new Product();
-                    _mapper.Map(command, lv_product);
-                    lv_product.IsOutOfStock = command.CurrentStock <= 0 ? true : false;
-                    lv_product.CurrentStock = command.CurrentStock < 0 ? 0 : command.CurrentStock;
-                    
-                    _storeDbContext.Product.Add(lv_product);
-                    _storeDbContext.SaveChanges();
 
-                    id = lv_product.Id;
-                }
+                var lv_product = _mapper.Map<Product>(request);
+                lv_product.IsOutOfStock = request.CurrentStock <= 0 ? true : false;
+                lv_product.CurrentStock = request.CurrentStock < 0 ? 0 : request.CurrentStock;
 
-                return id;
+                _storeDbContext.Product.Add(lv_product);
+                await _storeDbContext.SaveChangesAsync();
+
+                return _mapper.Map<ProductDisplayQuery>(lv_product);
             }
             catch (Exception e)
             {
-                throw new Exception($"Cannot add Product #{command.Name} in the store because {e.Message}.");
+                throw new Exception($"Cannot add Product #{request.Name} in the store because {e.Message}.");
             }
         }
-
-
-        public bool Handler(int id, UpdateProductCommand command)
-        {
-            try
-            {
-                bool isExist = false;
-                if (id > 0 && command != null)
-                {
-                    Product lv_product = _storeDbContext.Product.Find(id);
-
-                    if (lv_product != null)
-                    {
-                        isExist = true;
-                        _mapper.Map(command,lv_product);
-                        lv_product.IsOutOfStock = command.CurrentStock <= 0 ? true : false;
-                        lv_product.CurrentStock = command.CurrentStock < 0 ? 0 : command.CurrentStock;
-
-                        _storeDbContext.SaveChanges();
-                    }
-                    
-                }
-
-                return isExist;
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Cannot update Product #{command.Name} in the store because {e.Message}.");
-            }
-        }
-
-        public bool Handler(DeleteProductCommand command)
-        {
-            try
-            {
-                bool isExist = false;
-                if (command.Id > 0)
-                {
-                    Product lv_product = _storeDbContext.Product.Find(command.Id);
-                    if (lv_product != null)
-                    {
-                        isExist = true;
-                        _storeDbContext.Remove(lv_product);
-                        _storeDbContext.SaveChanges();
-                    }
-
-                }
-
-                return isExist;
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Cannot delete Product with Id #{command.Id} in the store because {e.Message}.");
-            }
-        }
-
     }
+
+
+    public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, ProductDisplayQuery>
+    {
+        private readonly StoreDbContext _storeDbContext;
+        private readonly IMapper _mapper;
+        public UpdateProductHandler(StoreDbContext storeDbContext, IMapper mapper)
+        {
+            this._storeDbContext = storeDbContext;
+            this._mapper = mapper;
+        }
+
+        public async Task<ProductDisplayQuery> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                Product lv_product = _storeDbContext.Product.Find(request.Id);
+
+                if (lv_product != null)
+                {
+                    _mapper.Map(request, lv_product);
+                    lv_product.IsOutOfStock = request.CurrentStock <= 0 ? true : false;
+                    lv_product.CurrentStock = request.CurrentStock < 0 ? 0 : request.CurrentStock;
+
+                    await _storeDbContext.SaveChangesAsync();
+                }
+
+                return _mapper.Map<ProductDisplayQuery>(lv_product);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Cannot update Product #{request.Name} in the store because {e.Message}.");
+            }
+        }
+    }
+
+
+    public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, bool>
+    {
+        private readonly StoreDbContext _storeDbContext;
+        private readonly IMapper _mapper;
+        public DeleteProductHandler(StoreDbContext storeDbContext, IMapper mapper)
+        {
+            this._storeDbContext = storeDbContext;
+            this._mapper = mapper;
+        }
+
+        public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                Product lv_product = _storeDbContext.Product.Find(request.Id);
+                bool isSucces = false;
+                if (lv_product != null)
+                {
+                    _storeDbContext.Remove(lv_product);
+                    await _storeDbContext.SaveChangesAsync();
+
+                    isSucces = true;
+                }
+
+                return isSucces;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Cannot update Product #{request.Id} in the store because {e.Message}.");
+            }
+        }
+    }
+
 }

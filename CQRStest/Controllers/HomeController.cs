@@ -12,24 +12,13 @@ namespace CQRStest.Controllers
 {
     public class HomeController : Controller
     {
-        private ProductsCommandHandler _commandHandler;
 
-        public HomeController(ProductsCommandHandler commandHandler)
+        public HomeController()
         {
-            this._commandHandler = commandHandler;
+           
         }
         public IActionResult Index()
         {
-            var command = new CreateProductCommand
-            {
-                Name = "Eggs",
-                CurrentStock = 34,
-                Description = "very good",
-                UnitPrice = 78
-            };
-
-            _commandHandler.Handler(command);
-
            return View();
         }
 
