@@ -93,7 +93,7 @@ namespace CQRStest.Controllers
                 bool result = await _mediator.Send(new DeleteProductCommand { Id = id });
                 if (result)
                 {
-                    return Ok(id);
+                    return Ok("Deleted Successfully");
                 }
             }
 
