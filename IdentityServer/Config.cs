@@ -16,7 +16,7 @@ namespace IdentityServer
             {
                  new IdentityResources.OpenId(),
                  new IdentityResources.Profile(),
-                // new IdentityResource("roles", "Your role", new List<string> {JwtClaimTypes.Role})
+              //   new IdentityResource("roles", "Your role", new List<string> {JwtClaimTypes.Role})
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
