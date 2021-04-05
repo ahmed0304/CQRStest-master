@@ -13,7 +13,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using MediatR;
+
+using Microsoft.OpenApi.Models;
+
 using IdentityServer4.AccessTokenValidation;
+
 
 namespace CQRStest
 {
@@ -47,12 +51,24 @@ namespace CQRStest
            });
 
 
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "CQRStest-master",
+                    Version = "v1",
+                    Description = "Sample service for CQRS Learner",
+                });
+            });
+
+
             services.AddEntityFrameworkNpgsql().AddDbContext<StoreDbContext>(opt =>
         opt.UseNpgsql(Configuration.GetConnectionString("MyStoreDbConection")));
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddAutoMapper(typeof(Startup));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,6 +98,9 @@ namespace CQRStest
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "CQRStest-master Services"));
 
         }
     }
