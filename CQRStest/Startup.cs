@@ -13,7 +13,6 @@ using System.Reflection;
 using MediatR;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Swagger;
 using System;
 
 namespace CQRStest
