@@ -42,7 +42,8 @@ namespace IdentityServer
         .AddDeveloperSigningCredential()        //This is for dev only scenarios when you don’t have a certificate to use.
         .AddInMemoryApiScopes(Config.ApiScopes)
         .AddInMemoryIdentityResources(Config.IdentityResources)
-        .AddInMemoryClients(Config.Clients);
+        .AddInMemoryClients(Config.Clients)
+        .AddInMemoryApiResources(Config.GetApis());
         }
 
         public void Configure(IApplicationBuilder app)
