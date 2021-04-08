@@ -1,0 +1,40 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/product",
+      "DownstreamScheme": "https",
+      "DownstreamHostandPorts": [
+        //  <-------------Local Host details ------------>
+        {
+          "Host": "localhost",
+          "Port": "44316"
+        }
+        //{
+        //  "Host": "appservice1.azurewebsites.net"
+        //}
+
+      ],
+      "UpstreamPathTemplate": "/api/product",
+      "UpstreamHttpMethod": [ "GET" ]
+    }
+    //,
+    //{
+    //  "DownstreamPathTemplate": "/WeatherForecast",
+    //  "DownstreamScheme": "https",
+    //  "DownstreamHostandPorts": [
+    //    //<-------------Local Host details ------------>
+    //    {
+    //      "Host": "localhost",
+    //      "Port": "44384"
+    //    }
+    //    //,    
+    //    //{
+    //    //  "Host": "appservice2.azurewebsites.net"
+    //    //}
+    //  ],
+    //  "UpstreamPathTemplate": "/service2",
+    //  "UpstreamHttpMethod": [ "GET" ]
+    //}
+
+  ]
+}
